@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="true"
+         backupStaticAttributes="false"
+         bootstrap="Bootstrap.php"
+         verbose="true"
+         colors="true">
+    <php>
+        <env name="APP_ENV" value="phpunit"/>
+    </php>
+    <testsuites>
+        <testsuite name="controller">
+            <directory>controllers</directory>
+        </testsuite>
+        <testsuite name="service">
+            <directory>service</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

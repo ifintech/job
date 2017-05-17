@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务日志</title>
+    <?php include(APPLICATION_BASE_TPL_PATH . "/inc/include.phtml"); ?>
+    <style>
+        .sortable img {width:96px;height:86px;border:1px solid #aeaeae;padding:1px;}
+        .sortable div { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 4em; text-align: center; }
+    </style>
+
+</head>
+<body>
+<div id="wrapper">
+    <?php echo $menuview; ?>
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="breadcrumb">
+                    <li>
+                        <span class="glyphicon glyphicon-user"></span><a href="#">任务日志</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+
+        <button type="button" class="btn btn-primary btn-lg left add-top" onclick="javascript:history.back(-1);">&nbsp;&nbsp;&nbsp;返回&nbsp;&nbsp;&nbsp;</button>
+        <!-- /.row -->
+        <div class="row"><div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table" id="dataTables-admin">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /#page-wrapper -->
+            <!-- Modal -->
+            <script>
+                var $_GET = (function(){
+                    var url = window.document.location.href.toString();
+                    var u = url.split("?");
+                    if(typeof(u[1]) == "string"){
+                        u = u[1].split("&");
+                        var get = {};
+                        for(var i in u){
+                            var j = u[i].split("=");
+                            get[j[0]] = j[1];
+                        }
+                        return get;
+                    } else {
+                        return {};
+                    }
+                })();
+
+                $(document).ready(function () {
+                    var job_id = $_GET['job_id'];
+                    var type = $_GET['type'];
+                    var url = '<?=APP_ADMIN_PATH?>/job/logDataTable?job_id=' + job_id + '&type=' + type;
+                    $('#dataTables-admin').dataTable({
+                        serverSide: true,
+                        'ajax': url,
+                        "columns": [
+                            {"title": "ID", "data": "id"},
+                            {"title": "机器IP", "data": "machine_ip"},
+                            {"title": "任务类型", "data": "type", render: function (data, type, row) {
+                                    if (data == 0) {
+                                        return "定时任务";
+                                    } else {
+                                        return "一次任务";
+                                    }
+                                }
+                            },
+                            {"title": "执行开始时间", "data": "exec_start_time"},
+                            {"title": "执行结束时间", "data": "exec_end_time"},
+                            {"title": "执行状况", "data": "exec_info"},
+                            {"title": "执行输出", "data": "exec_export", 'visible': false},
+                            {
+                                "title": "状态", "data": "status", render: function (data, type, row) {
+                                if (data == 0) {
+                                    return "执行中";
+                                } else if (data == 1) {
+                                    return "成功";
+                                } else {
+                                    return '失败';
+                                }
+                            }
+                            },
+                            {
+                                title: '查看结果详情', data: 'status', render: function (data, type, row) {
+                                return '<button class="btn btn-sm btn-default show-detail" data-detail=\'' + row["exec_export"] + '\'>查看</button>';
+                            }
+                            }
+
+                        ],
+                        ordering: false,
+                        "iDisplayLength": 20
+                    });
+
+                    $(document).on('click', '.show-detail', function () {
+                        var detail = $(this).data('detail');
+                        BEE.dialog({
+                            title: "",
+                            html: '<div style="height:400px;text-align:left;overflow-y: scroll;padding-left:15px;padding-right:15px;"><pre>' + syntaxHighlight(detail) + '</pre></div>',
+                            width: 800
+                        });
+                    });
+
+                    function syntaxHighlight(json) {
+                        if (typeof json != 'string') {
+                            json = JSON.stringify(json, undefined, 2);
+                        }
+                        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                            var cls = 'number';
+                            if (/^"/.test(match)) {
+                                if (/:$/.test(match)) {
+                                    cls = 'key';
+                                } else {
+                                    cls = 'string';
+                                }
+                            } else if (/true|false/.test(match)) {
+                                cls = 'boolean';
+                            } else if (/null/.test(match)) {
+                                cls = 'null';
+                            }
+                            return '<span class="' + cls + '">' + match + '</span>';
+                        });
+                    }
+                });
+            </script>
+
+</body>
+</html>

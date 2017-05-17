@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>执行中任务</title>
+    <?php include(APPLICATION_BASE_TPL_PATH . "/inc/include.phtml"); ?>
+    <style>
+        .sortable img {width:96px;height:86px;border:1px solid #aeaeae;padding:1px;}
+        .sortable div { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 4em; text-align: center; }
+    </style>
+
+</head>
+<body>
+<div id="wrapper">
+    <?php echo $menuview; ?>
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="breadcrumb">
+                    <li>
+                        <span class="glyphicon glyphicon-user"></span><a href="#">执行中任务</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading search-panel">
+                    <div class="panel-body" style="height: 50px">
+                        <input type="text" class="form-control" id="search_app_name" name="search_app_name" placeholder="请输入需要查询的项目名" value="<?=$_GET['app_name']?>" style="width: 250px">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+        <div class="row"><div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table" id="dataTables-admin">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /#page-wrapper -->
+            <!-- Modal -->
+            <script>
+                $(document).ready(function () {
+                    $('#dataTables-admin').dataTable({
+                        "columns": [
+                            { "title": "ID", "data": "id"},
+                            { "title": "项目名", "data": "app_name",'visible':false},
+                            { "title": "执行命令", "data": "command"},
+                            {"title": "任务类型", "data": "type", render: function (data, type, row) {
+                                    if (data == 0) {
+                                        return "定时任务";
+                                    } else {
+                                        return "一次任务";
+                                    }
+                                }
+                            },
+                            {"title": "机器IP", "data": "machine_ip"},
+                            {"title": "执行开始时间", "data": "exec_start_time"},
+                            {"title": "执行状况", "data": "exec_info"},
+                            { "title": "说明", "data": "note"},
+                            { "title": "申请人", "data": "proposer"}
+                        ],
+//                        'ajax' : '<?//=APP_ADMIN_PATH?>///job/getexecjob',
+                        "iDisplayLength":20,
+                        "ordering":false
+                    });
+                    // 筛选服务
+                    $('#search_app_name').blur(function(){
+                        var app_name = $(this).val();
+                        var url = '<?=APP_ADMIN_PATH?>/job/execjobview?app_name='+app_name;
+                        jumpUrl(url)
+                    });
+
+                    if("<?=$_GET['app_name']?>"){
+                        var app_name = "<?=$_GET['app_name']?>";
+                        var table = $('#dataTables-admin').dataTable().api();
+                        var url = '<?=APP_ADMIN_PATH?>/job/getexecjob?app_name='+app_name;
+                        table.ajax.url(url).load();
+                    }
+
+                });
+
+            </script>
+</body>
+</html>

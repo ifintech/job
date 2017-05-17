@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定时任务管理</title>
+    <?php include(APPLICATION_BASE_TPL_PATH . "/inc/include.phtml"); ?>
+    <style>
+        .sortable img {width:96px;height:86px;border:1px solid #aeaeae;padding:1px;}
+        .sortable div { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 4em; text-align: center; }
+    </style>
+
+</head>
+<body>
+<div id="wrapper">
+    <?php echo $menuview; ?>
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <ul class="breadcrumb">
+                    <li>
+                        <span class="glyphicon glyphicon-user"></span><a href="#">定时任务管理</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading search-panel">
+                    <div class="panel-body" style="height: 50px">
+                        <input type="text" class="form-control" id="search_app_name" name="search_app_name" style="width: 250px" placeholder="请输入需要查询的项目名" value="<?=$app_name?>">
+                        <button type="button" class="btn btn-primary btn-lg right" onclick="javascript:openDialog('Modal', url('/job/addtimedview'));" style="margin-top: -40px">&nbsp;&nbsp;&nbsp;添加任务&nbsp;&nbsp;&nbsp;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+        <div class="row"><div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table" id="dataTables-admin">
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /#page-wrapper -->
+            <!-- Modal -->
+            <script src="<?=APP_STATIC_PATH?>/admin/js/jquery-ui.js"></script>
+            <script>
+                var $_GET = (function(){
+                    var url = window.document.location.href.toString();
+                    var u = url.split("?");
+                    if(typeof(u[1]) == "string"){
+                        u = u[1].split("&");
+                        var get = {};
+                        for(var i in u){
+                            var j = u[i].split("=");
+                            get[j[0]] = j[1];
+                        }
+                        return get;
+                    } else {
+                        return {};
+                    }
+                })();
+
+                $(document).ready(function () {
+                    $('#dataTables-admin').dataTable({
+                        serverSide: true,
+                        "columns": [
+                            { "title": "ID", "data": "id"},
+                            { "data": "app_name",render:function(data,type,row){
+                                return "<p hidden>"+data+"</p>";
+                            }},
+                            { "title": "执行命令", "data": "command"},
+                            { "title": "执行频率", "data": "crontab"},
+                            { "title": "说明", "data": "note"},
+                            { "title": "失败重试", "data": "retry",render:function(data,type,row){
+                                if(data == 0){
+                                    return "否";
+                                }else if(data == 1){
+                                    return "是";
+                                }
+                            }},
+                            { "title": "申请人", "data": "proposer"},
+                            { "title": "操作", data: "status", width:"250px", render: function(data, type, row){
+                                buttonString = "<button type='button' class='btn btn_operate btn-primary edit-job'>编辑</button>";
+                                buttonString += "<button type='button' class='btn btn_operate btn-debug see-log'>日志</button>";
+                                if(data == 1){
+                                    buttonString +=  "<button type='button' class='btn btn_operate btn-warning change_status'>禁用</button>";
+                                    return buttonString;
+                                }else{
+                                    buttonString +=  "<button type='button' class='btn btn_operate btn-info change_status'>启用</button>";
+                                    return buttonString;
+                                }
+                            }}
+
+                        ],
+                        'ajax' : '<?=APP_ADMIN_PATH?>/job/timedtable',
+                        ordering:false,
+                        "iDisplayLength":20
+                    });
+
+                    $(document).on('click', '.change_status', function(){
+                        var id = $(this).parent().prev().prev().prev().prev().prev().prev().prev().text();
+                        var app_name = $(this).parent().prev().prev().prev().prev().prev().prev().text();
+
+                        $.post("<?=APP_ADMIN_PATH?>/job/updatetimedstatus", {
+                            id : id
+                        }, function(ret){
+                            if (ret.retcode == "2000000") {
+                                var table = $('#dataTables-admin').dataTable().api();
+                                var url = '<?=APP_ADMIN_PATH?>/job/timedtable?app_name='+app_name;
+                                table.ajax.url(url).load()
+                            }else{
+                                alert(ret.msg);
+                            }
+                        }, "json")
+                    });
+
+
+                    $(document).on('click', '.see-log', function(){
+                        var id = $(this).parent().prev().prev().prev().prev().prev().prev().prev().text();
+                        log_list = "<?=APP_ADMIN_PATH?>/job/log?job_id="+id+"&type=0";
+                        jumpUrl(log_list);
+                    });
+
+                    $(document).on('click', '.edit-job', function(){
+                        var id = $(this).parent().prev().prev().prev().prev().prev().prev().prev().text();
+                        openDialog('Modal', '<?=APP_ADMIN_PATH?>/job/addtimedview?id='+id);
+                    });
+
+                    // 筛选服务
+                    $('#search_app_name').blur(function(){
+                        var app_name = $(this).val();
+                        var url = '<?=APP_ADMIN_PATH?>/job/timed?app_name='+app_name;
+                        jumpUrl(url)
+                    });
+
+                    if($_GET['app_name']){
+                        var app_name = $_GET['app_name'];
+                        var table = $('#dataTables-admin').dataTable().api();
+                        var url = '<?=APP_ADMIN_PATH?>/job/timedtable?app_name='+app_name;
+                        table.ajax.url(url).load();
+                    }
+                });
+
+
+            </script>
+
+</body>
+</html>
