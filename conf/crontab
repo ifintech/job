@@ -1,4 +1,0 @@
-#错误任务重试
-*/5 * * * * php /data1/htdocs/rds/jobs/job.php Jobs_Job_FailJobRetry >> /dev/null
-#检查定时任务是否有未执行的
-* * * * * php /data1/htdocs/rds/jobs/job.php Jobs_Job_CheckTimedJob >> /dev/null
