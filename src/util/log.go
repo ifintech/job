@@ -14,7 +14,7 @@ func LogInit() {
 	} else {
 		logger = log.New(os.Stdout, "", log.LstdFlags)
 	}
-	logger.SetPrefix(App_Name + " " + Local_IP + " ")
+	logger.SetPrefix(Local_IP + " ")
 }
 
 func InfoLog(log string) {

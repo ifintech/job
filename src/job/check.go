@@ -6,10 +6,7 @@ import (
 	"strings"
 	"time"
 	"util"
-	"runtime"
 )
-
-const Allow_Parallel_Job_Count = 3 //允许单核cpu并行任务数
 
 func CheckCronJob(job map[string]string) bool {
 	//检查当前时间是否需要执行定时程序
@@ -17,13 +14,8 @@ func CheckCronJob(job map[string]string) bool {
 		return false
 	}
 
-	//当第一轮调度 如果机器平均负载较高或机器并行任务数大于5则不执行
-	t := time.Now()
-	if t.Second() < 30 && (!util.Able_To_Run || util.Run_Job_Count > int32(Allow_Parallel_Job_Count*runtime.NumCPU())) {
-		return false
-	}
-
 	//加锁
+	t := time.Now()
 	if lock("JOB-TIMED-"+job["id"]+"_"+t.Format("2006-01-02 15:04")) == false {
 		return false
 	}
@@ -32,11 +24,6 @@ func CheckCronJob(job map[string]string) bool {
 }
 
 func CheckOnceJob(job map[string]string) bool {
-	//如果机器平均负载较高或并行任务数大于5则不执行 除非任务需强制执行
-	if (!util.Able_To_Run || util.Run_Job_Count > int32(Allow_Parallel_Job_Count*runtime.NumCPU())) && job["force"] != ONCE_FORCE_RUN {
-		return false
-	}
-
 	//加锁
 	if lock("JOB-ONCE"+"-"+job["id"]) == false {
 		return false

@@ -8,9 +8,7 @@ import (
 )
 
 var Db *sql.DB
-var App_Name string
 var WG sync.WaitGroup
-var Run_Job_Count int32
 
 //连接redis
 func ConnectRedis() (redis.Conn, error) {

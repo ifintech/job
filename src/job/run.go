@@ -6,10 +6,9 @@ import (
 	"strings"
 	"time"
 	"util"
-	"sync/atomic"
 )
 
-//通常脚本执行方法
+//脚本执行方法
 func Run(job map[string]string, job_type int) {
 	util.InfoLog("job-start " + job["id"] + " " + strconv.Itoa(job_type) + " " + job["command"])
 	//记录开始运行
@@ -17,7 +16,6 @@ func Run(job map[string]string, job_type int) {
 	x_rid  := "JOB-" + strconv.FormatInt(run_id, 10)
 	//任务计数器加1
 	util.WG.Add(1)
-	atomic.AddInt32(&util.Run_Job_Count, 1)
 	//运行
 	session := sh.NewSession()
 	session.SetDir("/")
@@ -39,7 +37,6 @@ func Run(job map[string]string, job_type int) {
 	jobEnd(run_id, succ, exec_export)
 	//任务计数器减一
 	util.WG.Done()
-	atomic.AddInt32(&util.Run_Job_Count, -1)
 }
 
 func jobStart(job map[string]string, job_type int) int64 {
