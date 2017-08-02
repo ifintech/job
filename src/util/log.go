@@ -8,7 +8,7 @@ import (
 
 var logger *log.Logger
 
-func LogInit() {
+func InitLog() {
 	if Config.Env == "product" {
 		logger, _ = syslog.NewLogger(syslog.LOG_LOCAL7|syslog.LOG_DEBUG, log.LstdFlags)
 	} else {

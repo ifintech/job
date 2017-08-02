@@ -16,9 +16,11 @@ func main() {
 
 	//初始化
 	runtime.GOMAXPROCS(runtime.NumCPU()) //使用上多核
-	util.DbConnect() //获取数据库连接池
+	util.InitConfig()
+	util.DbConnect() //数据库连接池
 	util.GetLocalIP()
-	util.LogInit()
+	util.InitLog()
+
 	ioutil.WriteFile("/var/run/JOB_AGENT_PID", []byte(strconv.Itoa(os.Getpid())), 0666)
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM) //注册通道用于接收终止进程运行的系统信号

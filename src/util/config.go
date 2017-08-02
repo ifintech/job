@@ -1,23 +1,34 @@
 package util
 
-type MysqlConfig struct {
-	Host     string
-	Username string
-	Password string
-	Dbname   string
-	Charset  string
-}
-
-type RedisConfig struct {
-	Address string
-	Auth    string
-	Db      int
-}
+import (
+	"io/ioutil"
+	"encoding/json"
+)
 
 type JobConfig struct {
-	Mysql MysqlConfig
-	Redis RedisConfig
 	Env   string
+	Mysql struct {
+		      Host     string
+		      Username string
+		      Password string
+		      Dbname   string
+		      Charset  string
+	      }
+	Redis struct {
+		      Address string
+		      Auth    string
+		      Db      int
+	      }
 }
 
-var Config JobConfig = JobConfig{MysqlConfig{"172.16.22.82:3306", "root", "hrbbwx.com", "job", "utf8"}, RedisConfig{"172.16.22.82:6379", "", 0}, "dev"}
+const CONFIG_FILE = "/etc/job_agent.json"
+
+var Config JobConfig
+
+func InitConfig() (){
+	config_byte, err := ioutil.ReadFile(CONFIG_FILE)
+	if(err != nil){
+		PanicLog("配置文件获取失败: "+CONFIG_FILE, err)
+	}
+	json.Unmarshal(config_byte, &Config)
+}
