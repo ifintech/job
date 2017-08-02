@@ -1,12 +1,10 @@
 package main
 
 import (
-	"io/ioutil"
 	"job"
 	"os"
 	"os/signal"
 	"runtime"
-	"strconv"
 	"syscall"
 	"time"
 	"util"
@@ -20,30 +18,22 @@ func main() {
 	util.DbConnect() //数据库连接池
 	util.GetLocalIP()
 	util.InitLog()
-
-	ioutil.WriteFile("/var/run/JOB_AGENT_PID", []byte(strconv.Itoa(os.Getpid())), 0666)
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM) //注册通道用于接收终止进程运行的系统信号
 	util.InfoLog("job ready")
 
 	//等待整分时才开始工作
 	for {
-		select {
-		case <-sigs:
-			util.InfoLog("job end")
-			ioutil.WriteFile("/var/run/JOB_AGENT_PID", []byte(""), 0666)
-			os.Exit(1)
-		default:
-			if time.Now().Second() == 0 {
-				break
-			}
-			time.Sleep(time.Second)
+		if time.Now().Second() == 0 {
+			break
 		}
+		time.Sleep(time.Second)
 	}
 	util.InfoLog("job start work")
+
 	//工作
 	tick_10 := time.NewTicker(time.Second * 10)
 	tick_30 := time.NewTicker(time.Second * 30)
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM) //注册通道用于接收终止进程运行的系统信号
 Work:
 	for {
 		select {
@@ -60,7 +50,6 @@ Work:
 	util.InfoLog("job ready to exit")
 	util.WG.Wait()
 	util.InfoLog("job end")
-	ioutil.WriteFile("/var/run/JOB_AGENT_PID", []byte(""), 0666)
 }
 
 func doCronJob() {
@@ -80,4 +69,3 @@ func doOnceJob() {
 		}
 	}
 }
-
