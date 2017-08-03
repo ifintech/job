@@ -2,7 +2,6 @@ package job
 
 import (
 	"github.com/codeskyblue/go-sh"
-	"strconv"
 	"strings"
 	"time"
 	"util"
@@ -10,7 +9,7 @@ import (
 
 //脚本执行方法
 func Run(job map[string]string, job_type int) {
-	util.InfoLog("run job " + job["id"] + " " + strconv.Itoa(job_type) + " " + job["command"])
+	util.InfoLog("run job " + job["command"])
 	//记录开始运行
 	run_id := jobStart(job, job_type)
 	//任务计数器加1
