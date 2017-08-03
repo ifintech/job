@@ -8,13 +8,18 @@ import (
 	"syscall"
 	"time"
 	"util"
+	"flag"
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU()) //使用上多核
+
+	//解析外部输入参数
+	config_path := flag.String("f", "/etc/job_agent.json", "config file path")
+	flag.Parse()
+	util.InitConfig(*config_path)
 
 	//初始化
-	runtime.GOMAXPROCS(runtime.NumCPU()) //使用上多核
-	util.InitConfig()
 	util.DbConnect() //数据库连接池
 	util.GetLocalIP()
 	util.InitLog()
@@ -30,10 +35,10 @@ func main() {
 	util.InfoLog("job start work")
 
 	//工作
-	tick_10 := time.NewTicker(time.Second * 10)
-	tick_30 := time.NewTicker(time.Second * 30)
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM) //注册通道用于接收终止进程运行的系统信号
+	tick_10 := time.NewTicker(time.Second * 10)
+	tick_30 := time.NewTicker(time.Second * 30)
 Work:
 	for {
 		select {

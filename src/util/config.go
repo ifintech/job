@@ -3,6 +3,8 @@ package util
 import (
 	"io/ioutil"
 	"encoding/json"
+	"os"
+	"fmt"
 )
 
 type JobConfig struct {
@@ -21,14 +23,13 @@ type JobConfig struct {
 	      }
 }
 
-const CONFIG_FILE = "/etc/job_agent.json"
-
 var Config JobConfig
 
-func InitConfig() (){
-	config_byte, err := ioutil.ReadFile(CONFIG_FILE)
+func InitConfig(config_path string) (){
+	config_byte, err := ioutil.ReadFile(config_path)
 	if(err != nil){
-		PanicLog("配置文件获取失败: "+CONFIG_FILE, err)
+		fmt.Println("配置文件获取失败: "+config_path)
+		os.Exit(1)
 	}
 	json.Unmarshal(config_byte, &Config)
 }
