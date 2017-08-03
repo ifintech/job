@@ -10,16 +10,14 @@ import (
 
 //脚本执行方法
 func Run(job map[string]string, job_type int) {
-	util.InfoLog("job-start " + job["id"] + " " + strconv.Itoa(job_type) + " " + job["command"])
+	util.InfoLog("run job " + job["id"] + " " + strconv.Itoa(job_type) + " " + job["command"])
 	//记录开始运行
 	run_id := jobStart(job, job_type)
-	x_rid  := "JOB-" + strconv.FormatInt(run_id, 10)
 	//任务计数器加1
 	util.WG.Add(1)
 	//运行
 	session := sh.NewSession()
 	session.SetDir("/")
-	session.SetEnv("x-rid", x_rid)
 	command := strings.Split(job["command"], " ")
 	output, err := session.Command(command[0], command[1:]).Output()
 
@@ -53,9 +51,6 @@ func jobStart(job map[string]string, job_type int) int64 {
 }
 
 func jobEnd(run_id int64, succ bool, export string) bool {
-	if len(export) > 65535 {
-		export = export[:65530] + "..."
-	}
 	now_time := time.Now().Format("2006-01-02 15:04:05")
 	var log_status int
 	if succ {
