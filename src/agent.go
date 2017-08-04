@@ -15,7 +15,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU()) //使用上多核
 
 	//解析外部输入参数
-	config_path := flag.String("f", "/etc/job_agent.json", "config file path")
+	config_path := flag.String("f", "/etc/job-agent.json", "config file path")
 	flag.Parse()
 	util.InitConfig(*config_path)
 
