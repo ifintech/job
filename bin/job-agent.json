@@ -1,14 +1,13 @@
 {
-  "env": "test",
   "mysql": {
-    "host": "127.0.0.1:33306",
+    "host": "127.0.0.1:3306",
     "username": "root",
     "password": "Root1.pwd",
     "dbname": "service",
     "charset": "utf8"
   },
   "redis": {
-    "address": "127.0.0.1:36379",
+    "address": "127.0.0.1:6379",
     "auth": "",
     "db": 0
   }

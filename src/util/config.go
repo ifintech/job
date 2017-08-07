@@ -8,7 +8,6 @@ import (
 )
 
 type JobConfig struct {
-	Env   string
 	Mysql struct {
 		      Host     string
 		      Username string

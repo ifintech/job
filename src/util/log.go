@@ -2,18 +2,13 @@ package util
 
 import (
 	"log"
-	"log/syslog"
 	"os"
 )
 
 var logger *log.Logger
 
 func InitLog() {
-	if Config.Env == "product" {
-		logger, _ = syslog.NewLogger(syslog.LOG_LOCAL7|syslog.LOG_DEBUG, log.LstdFlags)
-	} else {
-		logger = log.New(os.Stdout, "", log.LstdFlags)
-	}
+	logger = log.New(os.Stdout, "", log.LstdFlags)
 	logger.SetPrefix(Local_IP + " ")
 }
 
