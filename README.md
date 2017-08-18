@@ -17,6 +17,8 @@
    ```shell
    wget -O job-agent https://github.com/ifintech/job/releases/download/v1.0.1/job-agent-amd64-1.0.1
    chmod +x job-agent
+   # 如果需要执行docker任务并且依赖于私有仓库镜像 则需要先在机器上登录
+   docker login [REPOSITORY_HOST] -u [username] -p [password]
    ```
 
 2. 添加配置 **/etc/job-agent.json**
@@ -48,7 +50,7 @@
 
 4. 部署完多个任务节点之后，部署[服务端](https://github.com/ifintech/service)
 
-5. 在服务端后台添加任务，等待一段时间后即可看到任务的运行结果
+5. 在服务端后台添加任务，等待一段时间后即可看到任务的运行结果![WX20170818-120751@2x](/Users/morenpeng/Downloads/WX20170818-120751@2x.png)
 
    ![WX20170807-113051@2x](https://ws1.sinaimg.cn/large/006tNc79ly1fib04qq8kxj31kw0asac6.jpg)
 
