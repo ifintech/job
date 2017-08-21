@@ -50,8 +50,6 @@
 
 4. 部署完多个任务节点之后，部署[服务端](https://github.com/ifintech/service)
 
-5. 在服务端后台添加任务，等待一段时间后即可看到任务的运行结果![WX20170818-120751@2x](/Users/morenpeng/Downloads/WX20170818-120751@2x.png)
+5. 在服务端后台添加任务，等待一段时间后即可看到任务的运行结果
 
-   ![WX20170807-113051@2x](https://ws1.sinaimg.cn/large/006tNc79ly1fib04qq8kxj31kw0asac6.jpg)
-
-   ![WX20170807-113122@2x](https://ws2.sinaimg.cn/large/006tNc79ly1fib04r86guj31kw0lagqr.jpg)
+   ![WX20170807-113122@2x](https://ws3.sinaimg.cn/large/006tNc79ly1fir7yqblobj31kw0njq84.jpg)
